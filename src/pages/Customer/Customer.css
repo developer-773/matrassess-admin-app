@@ -1,0 +1,13 @@
+.customers td:nth-child(5) {
+    min-width: 420px;
+    padding: 0;
+}
+
+.customers td:nth-child(5) {
+    padding: 10px 20px;
+}
+
+.customers td:nth-child(5) button {
+    display: block;
+    margin-left: auto;
+}

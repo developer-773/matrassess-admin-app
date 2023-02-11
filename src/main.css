@@ -1,0 +1,103 @@
+/* GENERAL */
+
+
+
+* {
+	box-sizing: border-box;
+}
+
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+html {
+	height: 100%;
+}
+
+img {
+	display: block;
+	height: auto;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	font-weight: 400;
+	/* line-height: var(--main-line-height); */
+}
+
+/* STICKY-FOOTER */
+.site-main {
+	flex-grow: 1;
+}
+
+ul {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+	border: none;
+	border-radius: 6px
+}
+
+table {
+	overflow-y: scroll;
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+    width: 1065px;
+	border: 1px solid #01374d4b;
+    text-align: center;
+}
+
+th {
+	padding: 18px;
+	background: #01384d;
+	color: #fff;
+}
+
+tr {
+	background-color: #fff;
+}
+
+td {
+	min-width: 90px;
+	padding: 18px;
+	font-family: "Montserrat";
+	font-weight: 500;
+	font-size: 15px;
+	line-height: 18px;
+	color: #000000;
+	border-bottom: 1px solid #01374d4b;
+}
+
+.btn-delete, .btn-edit {
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	padding: 2rem;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 25px ;
+}
+
+.btn-delete {
+	background-image: url("./assets/deleteIcon.svg");
+}
+
+.btn-edit {
+	background-image: url("./assets/editIcon.svg");
+
+}
+
+

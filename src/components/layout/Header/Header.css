@@ -1,0 +1,33 @@
+.header {
+	width: 100%;
+	padding: 15px;
+	background: #01384d;
+}
+
+.header__wrapper {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.header__input {
+	position: relative;
+	display: inline-block;
+	width: 400px;
+	padding: 12px;
+	font-family: "Montserrat";
+	font-weight: 500;
+	font-size: 13px;
+	line-height: 16px;
+	background: #ffffff;
+	color: #00000080;
+	border-radius: 7px;
+}
+
+.header__btn {
+	position: absolute;
+	top: 2.4rem;
+	left: 58rem;
+	border: none;
+	background-color: transparent;
+}

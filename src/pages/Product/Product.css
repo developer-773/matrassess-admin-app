@@ -1,0 +1,30 @@
+.product td:nth-child(7) {
+	min-width: 155px;
+	padding: 0;
+}
+
+.product td:nth-child(7) button {
+	display: block;
+	margin-left: auto;
+}
+
+.product td:nth-child(8) {
+	width: 34px;
+}
+
+.stock-true, .stock-false {
+	position: absolute;
+	top: 3.5rem;
+	right: 1rem;
+	width: 28px;
+	height: 28px;
+	background-image: url("../../assets/stock-done.svg");
+	background-repeat: no-repeat;
+	background-size: contain;
+	border: 0;
+	background-color: transparent;
+}
+
+.stock-false {
+	background-image: url("../../assets//stock-false.svg");
+}

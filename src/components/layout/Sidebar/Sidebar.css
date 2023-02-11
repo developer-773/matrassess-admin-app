@@ -1,0 +1,37 @@
+.sidebar__list {
+	width: 220px;
+	height: 750px;
+	background: #01384d;
+}
+
+.sidebar__item {
+	margin-bottom: 22px;
+}
+
+.sidebar__item svg {
+	width: 20px;
+	height: 20px;
+	margin-right: 12px;
+
+}
+
+.sidebar__item a {
+	display: inline-flex;
+	align-items: center;
+	min-width: 220px;
+	padding: 15px 30px;
+	font-family: "Montserrat";
+	font-weight: 500;
+	font-size: 16px;
+	line-height: 20px;
+	color: #ffffff;
+}
+
+.sidebar__item a:hover {
+	color: #ffffff;
+}
+
+.active {
+	color: #fff;
+	background: #EABF9F;
+}

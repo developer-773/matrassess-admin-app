@@ -1,0 +1,22 @@
+.reusable {
+    display: block;
+    min-width: 220px;
+	padding: 14px;
+	font-family: "Montserrat";
+	font-style: normal;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 17px;
+	color: #ffffff;
+	background: #01384d;
+	border-radius: 7px;
+	cursor: pointer;
+	transition: .4s;
+	border: 2px solid #01384d;
+}
+
+.reusable:hover {
+	background-color: #fff;
+	color: #01384d;
+	border: 2px solid #01384d;
+}
