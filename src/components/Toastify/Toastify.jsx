@@ -23,7 +23,6 @@ export const ToastContainerr = () => {
 };
 
 function preloader(loading) {
-	
 		setTimeout(() => {
 			if(loading) {
 			window.location.reload()
@@ -32,8 +31,24 @@ function preloader(loading) {
 	
 }
 
+function preloaderForLogin(load) {
+
+	setTimeout(() => {
+		if(load) {
+			toast.update(load, {
+				render: "Login successfully ! Redirecting...",
+				type: "success",
+				isLoading: false,
+				autoClose: 2000,
+			});
+			
+		}
+	}, 2500)
+}
+
 export const postUser = ({ username, password }) => {
 	const id = toast.loading("Ma'lumotlar tekshirilmoqda... Iltimos, kuting...");
+
 	axios
 		.post(`${baseUrl}/login`, {
 			userName: username,
@@ -58,6 +73,8 @@ export const postUser = ({ username, password }) => {
 				autoClose: 2500,
 			});
 		});
+
+		preloaderForLogin(id)
 };
 
 export const ToastAlertEdit = async (path, modalFalse) => {

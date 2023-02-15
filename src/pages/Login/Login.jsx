@@ -13,15 +13,14 @@ import axios from "axios";
 
 
 export const Login = () => {
-	const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 
 	const nameRef = useRef();
 	const passwordRef = useRef();
-	const navigate = useNavigate();
 
 	let login = "admin";
 	let pass = "admin";
+	const navigate = useNavigate();
 
 
 	const handleLoginForm = (evt) => {
@@ -32,12 +31,12 @@ export const Login = () => {
       toast.error("Login or password is invalid !")
 		} else {
 			postUser({username, password});
-			
-		// 	setTimeout(() => {
-        // nameRef.current.value = '';
-        // passwordRef.current.value = '';
-        // navigate("/")
-		// 	}, 3010);
+			setTimeout(() => {
+			nameRef.current.value = '';
+			passwordRef.current.value = '';
+				navigate("/")
+		},5000)
+
 		}
 	};
 
@@ -75,6 +74,7 @@ export const Login = () => {
 					</button>
 				</form>
 			</div>
+			<ToastContainerr />
 		</>
 	);
 };
