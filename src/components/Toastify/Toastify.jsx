@@ -27,7 +27,7 @@ function preloader(loading) {
 			if(loading) {
 			window.location.reload()
 			}
-		},3000)
+		},5000)
 	
 }
 

@@ -34,7 +34,7 @@ export const Login = () => {
 			setTimeout(() => {
 			nameRef.current.value = '';
 			passwordRef.current.value = '';
-				navigate("/")
+			navigate("/")
 		},5000)
 
 		}
