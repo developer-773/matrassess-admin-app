@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ImageContext } from "../../context/ImageContex";
 import "./ImageUpload.css"
 
 
@@ -54,13 +53,6 @@ export const ImageUpload = () => {
 		},
 	});
 
-    const submit = (data) => {
-        console.log(data.first_image[0])
-        console.log(data.second_image[0])
-        console.log(data.third_image[0])
-        console.log(data)
-        arr.push(data?.first_image[0] ?  data?.first_image[0] : '', data?.second_image[0], data?.third_image[0])
-    }
 
 
     

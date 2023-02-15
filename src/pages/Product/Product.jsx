@@ -8,6 +8,7 @@ import { Button } from "../../components/Button";
 import { useForm } from "react-hook-form";
 import {
 	ToastAlertDelete,
+	ToastAlertDeleteWithId,
 	ToastAlertEditWithId,
 	ToastAlertPostWithId,
 	ToastContainerr,
@@ -17,19 +18,16 @@ import "../../components/Input/Input.css";
 import "../../components/Button/Button.css";
 import "./Product.css";
 import "../../components/ToggleSwitch/ToggleSwitch.css";
-
-const baseURL = import.meta.env.VITE_APP_BASE_IMG_URL
+import axios from "axios";
+import { Token } from "../../auth";
 
 export const Product = () => {
 	const [isToggled, setIsToggled] = useState(false);
-	// const { data, isLoading, refetch, isFetched, error, status } =
-	// 	useQueryData("products");
+	const { data, isLoading, refetch, isFetched, error, status } = useQueryData("product", "products");
 	const [postProduct, setPostProduct] = useState(false);
 	const [editProduct, setEditProduct] = useState(false);
 	const [deleteProduct, setDeleteProduct] = useState(false);
-	const defaultImg = new Blob(["Avoid error for empty input file"], {
-		type: "text/plain",
-	});
+	const defaultImg = new Blob(["Avoid error for empty input file"], {type: "text/plain",});
 	const [idd, setId] = useState(0);
 	const [findedData, setFindedData] = useState({});
 	const [optionValue, setOptionValue] = useState(1);
@@ -37,37 +35,61 @@ export const Product = () => {
 	let [secondPhotos, setSecondPhotos] = useState(null);
 	let [thirdPhotos, setThirdPhotos] = useState(null);
 	const [stock, setStock] = useState(false);
-	const [newPoduct, setNewProduct] = useState(false);
+	const [newProduct, setNewProduct] = useState(true);
+	const [categoryId, setCategoryId] = useState(0)
 
 	let StockDone = stock ? "d-inline-block" : "d-none";
 	let StockFalse = stock ? "d-none" : "d-inline-block";
+	const [count, setCount] = useState(0);
 
-	let nameR = useRef(null), categR = useRef(null), weigR = useRef(null), frI = useRef(null),seI = useRef(null), thI = useRef(null), warR = useRef(null), sizR = useRef(null), capR = useRef(null), infR = useRef(null), prR = useRef(null), stR = useRef(null)
+	let nameR = useRef(null),
+		categR = useRef(null),
+		weigR = useRef(null),
+		frI = useRef(null),
+		seI = useRef(null),
+		thI = useRef(null),
+		warR = useRef(null),
+		sizR = useRef(null),
+		capR = useRef(null),
+		infR = useRef(null),
+		prR = useRef(null),
+		stR = useRef(null),
+		newProductStatus = useRef(null)
 
-	// Add edit and delete buttons for backend data to render on table
-	
-	Array.isArray(data?.products) ?
-		data?.products?.map(
-			(item) =>
-				(item.edit = (
-					<button
-						className="btn-edit opacity-50"
-						data-id={item.id}
-						onClick={(e) => edit(+e.target.dataset.id)}
-						type="button" disabled
-					></button>
-				)) &&
-				(item.delete = (
-					<button
-						className="btn-delete"
-						data-id={item.id}
-						type="button"
-						onClick={(e) => deleting(+e.target.dataset.id)}
-					></button>
-				)) &&
-				(item.status = <ToggleSwitch />)
-		) : null
-	
+
+		// Add edit and delete buttons for backend data to render on table
+	Array.isArray(data?.products)
+		? data?.products?.map(
+				(item) =>
+					(item.edit = (
+						<button
+							className="btn-edit "
+							data-id={item.id}
+							onClick={(e) => edit(+e.target.dataset.id)}
+							type="button"
+						></button>
+					)) &&
+					(item.delete = (
+						<button
+							className="btn-delete"
+							data-id={item.id}
+							type="button"
+							onClick={(e) => deleting(+e.target.dataset.id)}
+						></button>
+					)) &&
+					(item.status = (
+						<>
+							<label className="toggle-switch">
+								<input type="checkbox" />
+								<span className="switch"></span>
+							</label>
+						</>
+					))
+		  )
+		: null;
+
+	//Refetch data for updates
+	useEffect(() => {}, [count]);
 
 	// Memoize table head
 	const columns = useMemo(() => ProductColumn, []);
@@ -98,25 +120,26 @@ export const Product = () => {
 
 	/* Images upload and show for user proccess end */
 
-	const form1 = useForm({
-		mode: "onChange",
-	
-	});
 
-	const { register, handleSubmit } = useForm({
-		mode: "onBlur",
-	});
+	// For create 
+	const form1 = useForm();
+
+	// For edit 
+	const { register, handleSubmit } = useForm();
 
 	// Select value
 	const handleSelectValue = (evt) => {
-		setOptionValue(parseInt(evt.target.value));
+		const targeted = evt.target.value
+		const findedId = data?.categories?.find(item => item.category === targeted)
+		setCategoryId(findedId.id)
 	};
 
 	// Form submit
 	const formSubmit = (formSubmitData) => {
 		let formData = new FormData();
+
 		formData.append("name", formSubmitData.product_name);
-		formData.append("category", formSubmitData.product_category.slice(2));
+		formData.append("category", formSubmitData.product_category);
 		formData.append("weight", formSubmitData.product_weight);
 		formData.append("images", formSubmitData.first_image[0]);
 		formData.append("images", formSubmitData.second_image[0]);
@@ -129,60 +152,50 @@ export const Product = () => {
 		formData.append("cost", formSubmitData.product_price);
 		formData.append("newCost", formSubmitData.product_stock_price);
 		formData.append("discount", stock);
-		formData.append("new", newPoduct);
+		formData.append("new", newProduct);
 
 		//Alert for submit info
-		ToastAlertPostWithId("products", formData, optionValue, setPostProduct);
-		refetch();
+		ToastAlertPostWithId("products", formData, categoryId, setPostProduct);
+
 		setFirstPhotos(null), setSecondPhotos(null), setThirdPhotos(null);
+		form1.reset();
+		setCount(count + 1);
 	};
 
 	/* Editing proccess start */
 
-
 	// Get button id
 	const edit = (id) => {
+		setIsToggled(true);
 		setEditProduct(true);
 		setId(id);
 		let finded = data?.products?.find((obj) => obj.id === id);
 		setFindedData(finded);
-
-
-
 	};
-
-	// const convertImg = (img, index) => {
-	// 	img?.replaceAll("[", "")
-	// 	.replaceAll("]", "")
-	// 	.replaceAll('"', "")
-	// 	.split(",")[index];
-	// }
-
-
-
 
 	// FormSubmit for edit
 	const formSubmitEdited = (evt) => {
-		evt.preventDefault()
+		evt.preventDefault();
 
 		let formData = new FormData();
 		formData.append("name", nameR.current.value);
-		formData.append("category", categR.current.value.slice(2));
+		formData.append("category", categR.current.value);
 		formData.append("weight", weigR.current.value);
 		formData.append("images", frI.current.files[0]);
 		formData.append("images", seI.current.files[0]);
 		formData.append("images", thI.current.files[0]);
 		formData.append("isActive", true);
-		formData.append("warranty", warR.current.value)
+		formData.append("warranty", warR.current.value);
 		formData.append("size", sizR.current.value);
 		formData.append("capacity", capR.current.value);
 		formData.append("body", infR.current.value);
 		formData.append("cost", prR.current.value);
 		formData.append("newCost", stR.current.value);
 		formData.append("discount", stock);
-		formData.append("new", newPoduct);
+		formData.append("new", newProductStatus.current.checked);
 
-		ToastAlertEditWithId("products", formData, optionValue, setEditProduct);
+
+		ToastAlertEditWithId("products", formData, idd, setEditProduct);
 	};
 
 	/* Editing proccess end */
@@ -197,7 +210,9 @@ export const Product = () => {
 
 	//handle delete button on confirm modal
 	const submitDeleting = () => {
-		deleteCategory(idd);
+		ToastAlertDeleteWithId("products", idd );
+		setDeleteProduct(false);
+		setCount(count + 1)
 	};
 
 	//handle cancel button on confirm modal
@@ -205,16 +220,11 @@ export const Product = () => {
 		setDeleteProduct(false);
 	};
 
-	// function for delete
-	const deleteCategory = async (id) => {
-		ToastAlertDelete("products", id, setDeleteProduct);
-		refetch();
-	};
-
 	/* Deleting proccess end */
 
+
 	return (
-		<div className="p-5 product ">
+		<div className="p-5 product ">		
 			<Modal
 				modal={postProduct}
 				setModal={setPostProduct}
@@ -288,7 +298,7 @@ export const Product = () => {
 								</option>
 								{data?.categories?.map((category) => (
 									<option
-										value={category.id + category.category}
+									value={category.category}
 										className="fs-4"
 										key={category.id}
 									>
@@ -315,7 +325,6 @@ export const Product = () => {
 								{...form1.register("product_price")}
 								className="input"
 								placeholder="masalan: 20 000"
-								defaultValue={"2"}
 								required
 							/>
 						</label>
@@ -326,7 +335,6 @@ export const Product = () => {
 								className="input"
 								{...form1.register("product_weight")}
 								placeholder="masalan: 200 kg"
-								defaultValue={"3"}
 								required
 							/>
 						</label>
@@ -338,7 +346,6 @@ export const Product = () => {
 								type="text"
 								className="input"
 								{...form1.register("product_size")}
-								defaultValue={"4"}
 								placeholder="masalan: 200 x 140 x 40"
 								required
 							/>
@@ -349,7 +356,6 @@ export const Product = () => {
 								type="text"
 								className="input"
 								{...form1.register("product_warranty")}
-								defaultValue={"5"}
 								placeholder="masalan: 1 yil"
 								required
 							/>
@@ -360,7 +366,6 @@ export const Product = () => {
 								type="text"
 								className="input"
 								{...form1.register("product_capacity")}
-								defaultValue={"6"}
 								placeholder="masalan: 2"
 								required
 							/>
@@ -372,7 +377,6 @@ export const Product = () => {
 								type="text"
 								className="input"
 								{...form1.register("product_stock_price")}
-								defaultValue={"7"}
 								placeholder="masalan: 1 200 000"
 							/>
 							<button
@@ -395,16 +399,21 @@ export const Product = () => {
 								rows="11"
 								className="input"
 								{...form1.register("product_info")}
-								defaultValue={"info"}
 								placeholder="info..."
 								required
 							></textarea>
 						</label>
-
-						<ToggleSwitch
-							isToggled={newPoduct}
-							onToggle={() => setNewProduct(!newPoduct)}
-						/>
+						<span className="d-flex justify-content-between">
+							<label className="label">Novinka</label>
+							<label className="toggle-switch">
+								<input
+									type="checkbox"
+									defaultChecked
+									onChange={(e) => setNewProduct(e.target.checked)}
+								/>
+								<span className="switch"></span>
+							</label>
+						</span>
 						<Button />
 					</div>
 				</form>
@@ -416,12 +425,11 @@ export const Product = () => {
 				width={"80%"}
 				height={"77%"}
 			>
-				<form className="row" onSubmit={(formSubmitEdited)}>
+				<form className="row" onSubmit={formSubmitEdited}>
 					<div className="col">
 						<span className="image-upload position-relative">
 							<input
 								type="file"
-								// {...register("first_image")}
 								ref={frI}
 								className="opacity-0 position-absolute"
 								onChange={handleFirstInputChange}
@@ -440,7 +448,6 @@ export const Product = () => {
 								type="file"
 								className="opacity-0 position-absolute"
 								ref={seI}
-								// {...register("second_image")}
 								required
 								onChange={handleSecondInputChange}
 							/>
@@ -464,14 +471,12 @@ export const Product = () => {
 								type="file"
 								className="opacity-0"
 								ref={thI}
-								// {...register("third_image")}
 								onChange={handleThirdInputChange}
 								required
 							/>
 						</span>
 					</div>
 					<div className="col">
-						{console.log(findedData)}
 						<label className="label mb-5">
 							Toifalar
 							<select
@@ -479,7 +484,6 @@ export const Product = () => {
 								name="product_category"
 								className="input"
 								ref={categR}
-								// {...register("product_category")}
 								onChange={handleSelectValue}
 								defaultValue={findedData.category}
 							>
@@ -488,7 +492,7 @@ export const Product = () => {
 								</option>
 								{data?.categories?.map((category) => (
 									<option
-										value={category.id + category.category}
+										value={category.category}
 										className="fs-4"
 										key={category.id}
 									>
@@ -501,7 +505,6 @@ export const Product = () => {
 						<label className="label mb-5">
 							Tovar nomi
 							<input
-								// {...register("product_namee")}
 								ref={nameR}
 								type="text"
 								className="input"
@@ -515,7 +518,6 @@ export const Product = () => {
 							<input
 								type="text"
 								ref={prR}
-								// {...register("product_price")}
 								className="input"
 								placeholder={findedData.cost}
 								defaultValue={"20000"}
@@ -528,9 +530,8 @@ export const Product = () => {
 								type="text"
 								className="input"
 								ref={weigR}
-								// {...register("product_weight")}
-								placeholder={findedData.weight}
-								defaultValue={"200"}
+								placeholder={'Masalan: 150'}
+								defaultValue={findedData.weight}
 								required
 							/>
 						</label>
@@ -542,7 +543,6 @@ export const Product = () => {
 								type="text"
 								className="input"
 								ref={sizR}
-								// {...register("product_size")}
 								defaultValue={findedData.size}
 								placeholder={"masalan: 200 x 140 x 40"}
 								required
@@ -554,7 +554,6 @@ export const Product = () => {
 								type="text"
 								className="input"
 								ref={warR}
-								// {...register("product_warranty")}
 								defaultValue={findedData.warranty}
 								placeholder={"masalan: 1 yil"}
 								required
@@ -566,7 +565,7 @@ export const Product = () => {
 								type="text"
 								className="input"
 								ref={capR}
-								// {...register("product_capacity")}
+							
 								defaultValue={findedData.capacity}
 								placeholder={"masalan: 2"}
 								required
@@ -579,7 +578,6 @@ export const Product = () => {
 								type="text"
 								className="input"
 								ref={stR}
-								// {...register("product_stock_price")}
 								defaultValue={findedData.new_cost}
 								placeholder="masalan: 1 200 000"
 							/>
@@ -603,28 +601,29 @@ export const Product = () => {
 								rows="11"
 								className="input"
 								ref={infR}
-								// {...register("product_info")}
 								defaultValue={findedData.body}
 								placeholder="info..."
 								required
 							></textarea>
 						</label>
-
-						<ToggleSwitch
-							isToggled={newPoduct}
-							onToggle={() => setNewProduct(!newPoduct)}
-						/>
-						<Button />
+						<span className="d-flex justify-content-between">
+							<label className="label">Novinka</label>
+							<label className="toggle-switch">
+								<input
+									type="checkbox"
+									ref={newProductStatus}
+								/>
+								<span className="switch"></span>
+							</label>
+						</span>
+						<Button text={"Saqlash"} />
 					</div>
 				</form>
 			</Modal>
 
-			{/* ))} */}
-
 			<button
 				type="submit"
 				className="reusable"
-				style={{ position: "absolute", bottom: "3rem", right: "0" }}
 				onClick={() => setPostProduct(true)}
 			>
 				Qo'shish
@@ -660,7 +659,9 @@ export const Product = () => {
 			) : error?.message === "Network Error" ? (
 				<h2 className="text-danger">Server bilan muammo yuzaga keldi !</h2>
 			) : !data?.products?.length ? (
-				<h3>Mahsulotlar hozircha mavjud emas. Hohlasangiz qo'shing</h3>
+				setTimeout(() => {
+					<h3>Mahsulotlar hozircha mavjud emas. Hohlasangiz qo'shing</h3>
+				  },2500)
 			) : (
 				""
 			)}

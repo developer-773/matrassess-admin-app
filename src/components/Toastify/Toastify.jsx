@@ -22,28 +22,20 @@ export const ToastContainerr = () => {
 	);
 };
 
-// export const NetworkToastify = () => {
-// 	toast("Loading...  Please wait....");
-// 	<ToastContainer
-// 		position="top-right"
-// 		autoClose={3000}
-// 		hideProgressBar={false}
-// 		newestOnTop={true}
-// 		closeOnClick
-// 		rtl={false}
-// 		pauseOnFocusLoss
-// 		draggable
-// 		pauseOnHover
-// 		theme="light"
-// 	/>;
-// };
-
-// NetworkToastify();
+function preloader(loading) {
+	
+		setTimeout(() => {
+			if(loading) {
+			window.location.reload()
+			}
+		},3000)
+	
+}
 
 export const postUser = ({ username, password }) => {
 	const id = toast.loading("Ma'lumotlar tekshirilmoqda... Iltimos, kuting...");
 	axios
-		.post(`http://localhost:1212/admin/login`, {
+		.post(`${baseUrl}/login`, {
 			userName: username,
 			password: password,
 		})
@@ -78,8 +70,7 @@ export const ToastAlertEdit = async (path, modalFalse) => {
 		})
 		.then((res) => {
 			if (res.status >= 200 || res.status <= 210) {
-				modalFalse(false)
-
+				modalFalse(false),
 				toast.update(i, {
 					render: "Muvaffaqiyatli o'zgartirildi !",
 					type: "success",
@@ -89,13 +80,17 @@ export const ToastAlertEdit = async (path, modalFalse) => {
 			}
 		})
 		.catch((err) => {
+			modalFalse(false)
 			toast.update(i, {
 				render: "Qayerdadir xatolik bo'ldi.",
 				type: "error",
 				isLoading: false,
 				autoClose: 1500,
+
 			});
 		});
+
+		preloader(i)
 }
 
 export const ToastAlertPost =  (path, obj, setPostCategory) => {
@@ -121,6 +116,7 @@ export const ToastAlertPost =  (path, obj, setPostCategory) => {
 			}
 		})
 		.catch((err) => {
+			setPostCategory(false);
 			toast.update(id, {
 				render: "Qayerdadir xatolik bo'ldi.",
 				type: "error",
@@ -142,7 +138,6 @@ export const ToastAlertPostWithId =  (path, obj, id, setPostCategory) => {
 		})
 		.then((res) => {
 			if (res.status >= 200 || res.status <= 210) {
-				console.log(res)
 				setPostCategory(false);
 				toast.update(idd, {
 					render: "Muvaffaqiyatli qo'shildi !",
@@ -153,7 +148,7 @@ export const ToastAlertPostWithId =  (path, obj, id, setPostCategory) => {
 			}
 		})
 		.catch((err) => {
-			console.log(err)
+			setPostCategory(false);
 			toast.update(idd, {
 				render: "Qayerdadir xatolik bo'ldi.",
 				type: "error",
@@ -175,10 +170,9 @@ export const ToastAlertEditWithId =  (path, obj, id, setPostCategory) => {
 		})
 		.then((res) => {
 			if (res.status >= 200 || res.status <= 210) {
-				console.log(res)
 				setPostCategory(false);
 				toast.update(idd, {
-					render: "Muvaffaqiyatli qo'shildi !",
+					render: "Muvaffaqiyatli o'zgartirildi !",
 					type: "success",
 					isLoading: false,
 					autoClose: 1500,
@@ -186,7 +180,7 @@ export const ToastAlertEditWithId =  (path, obj, id, setPostCategory) => {
 			}
 		})
 		.catch((err) => {
-			console.log(err)
+			setPostCategory(false);
 			toast.update(idd, {
 				render: "Qayerdadir xatolik bo'ldi.",
 				type: "error",
@@ -194,9 +188,11 @@ export const ToastAlertEditWithId =  (path, obj, id, setPostCategory) => {
 				autoClose: 1500,
 			});
 		});
+
+		preloader(idd)
 }
 
-export const ToastAlertDelete = (path, id, modalFalse) => {
+export const ToastAlertDelete = (path, id) => {
 	const i = toast.loading("So'rovingiz, qabul qilindi ...");
 	axios
 		.delete(`${baseUrl}/${path}/${id}`, {
@@ -205,9 +201,7 @@ export const ToastAlertDelete = (path, id, modalFalse) => {
 			},
 		})
 		.then((res) => {
-			if (res.status >= 200 || res.status <= 210) {
-				modalFalse(false)
-
+			if (res.status >= 200 || res.status <= 210) {	
 				toast.update(i, {
 					render: "Muvaffaqiyatli o'chirildi !",
 					type: "success",
@@ -217,7 +211,6 @@ export const ToastAlertDelete = (path, id, modalFalse) => {
 			}
 		})
 		.catch((err) => {
-			console.log(err)
 			toast.update(i, {
 				render: "Qayerdadir xatolik bo'ldi.",
 				type: "error",
@@ -225,6 +218,38 @@ export const ToastAlertDelete = (path, id, modalFalse) => {
 				autoClose: 1500,
 			});
 		});
+
+	preloader(i)
+}
+
+export const ToastAlertDeleteWithId = (path, id) => {
+	const i = toast.loading("So'rovingiz, qabul qilindi ...");
+	axios
+		.delete(`${baseUrl}/${path}/${id}`, {
+			headers: {
+				Authorization: Token,
+			},
+		})
+		.then((res) => {
+			if (res.status >= 200 || res.status <= 210) {
+				toast.update(i, {
+					render: "Muvaffaqiyatli o'chirildi !",
+					type: "success",
+					isLoading: false,
+					autoClose: 1500,
+				});
+			}
+		})
+		.catch((err) => {
+			toast.update(i, {
+				render: "Qayerdadir xatolik bo'ldi.",
+				type: "error",
+				isLoading: false,
+				autoClose: 1500,
+			});
+		});
+
+		preloader(i)
 }
 
 

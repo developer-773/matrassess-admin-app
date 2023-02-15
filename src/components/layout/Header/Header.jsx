@@ -1,10 +1,7 @@
-import React, { useRef } from 'react'
 import "./Header.css"
-import {BiSearch} from "react-icons/bi"
 import { Avatar } from '../../../assets/icons'
-import { Table } from '../../Table'
 
-export const Header = ({}) => {
+export const Header = () => {
 
 
   return (
@@ -12,9 +9,9 @@ export const Header = ({}) => {
         <div className="container">
             <div className="header__wrapper">
            <form>
-            <input className='header__input' type="search" placeholder='Search' aria-label='Search'/>
-            <button className='header__btn' type='submit'>
-            <BiSearch size={22} />
+            <input className='header__input' type="search"
+            placeholder='Search' aria-label='Search'/>
+            <button className='header__btn head-btn' type='submit'>
             </button>
            </form>
             <span className='header__avatar pe-5'>

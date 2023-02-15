@@ -7,7 +7,7 @@ import { useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLoaderData } from "react-router-dom";
-import { ToastContainerr, NetworkToastify, postUser } from "../../components/Toastify";
+import { ToastContainerr,  postUser } from "../../components/Toastify";
 import { Token } from "../../auth";
 import axios from "axios";
 
@@ -23,16 +23,6 @@ export const Login = () => {
 	let login = "admin";
 	let pass = "admin";
 
-  const test = async() => {
-
-    
-    const data = await axios.get(`${baseUrl}/categories`, {headers:{Authorization: (Token)}
-  }).then((res) => console.log(res?.data)).catch(err => console.log(err));
-  return data;
-}
-
-test()
-
 
 	const handleLoginForm = (evt) => {
 		evt.preventDefault();
@@ -41,21 +31,19 @@ test()
 		if (nameRef.current.value !== login && passwordRef.current.value !== pass) {
       toast.error("Login or password is invalid !")
 		} else {
-
 			postUser({username, password});
 			
-			setTimeout(() => {
-        nameRef.current.value = '';
-        passwordRef.current.value = '';
-        navigate("/")
-			}, 3010);
+		// 	setTimeout(() => {
+        // nameRef.current.value = '';
+        // passwordRef.current.value = '';
+        // navigate("/")
+		// 	}, 3010);
 		}
 	};
 
 	return (
 		<>
 			<div className="login">
-				<NetworkToastify />
 				<form
 					className="w-25 mx-auto p-4 border rounded-2"
 					style={{ marginTop: "15rem" }}
@@ -86,7 +74,6 @@ test()
 						Kirish
 					</button>
 				</form>
-				<ToastContainerr />
 			</div>
 		</>
 	);

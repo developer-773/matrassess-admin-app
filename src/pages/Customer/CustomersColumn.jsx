@@ -2,19 +2,19 @@
 export const CustomersColumn = [
     {
         Header: 'ID',
-        accessor: 'id_number',
+        accessor: 'id',
     },
     {
         Header: 'Sana',
-        accessor: 'date',
+        accessor: 'time',
     },
     {
         Header: 'Telefon Raqami',
-        accessor: 'user_phone',
+        accessor: 'number',
     },
     {
         Header: 'Qayta aloqa',
-        accessor: 'toggle',
+        accessor: 'contacted',
     },
     {
         Header: '',

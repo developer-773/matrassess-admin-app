@@ -8,29 +8,28 @@ import "../../components/Input/Input.css";
 import "../../components/Button/Button.css";
 import {
 	ToastAlertDelete,
-	ToastAlertEdit,
+	ToastAlertEditWithId,
 	ToastAlertPost,
 	ToastContainerr,
 } from "../../components/Toastify";
 import { useQueryData } from "../../hook";
-import { Loader } from "../../components/Loader";
-import { ImageContext } from "../../context/ImageContex";
+
 
 export const Category = () => {
-	const { data, refetch, isFetched, isLoading, isSuccess, error, status } =
-		useQueryData("categories");
+	const { data, refetch, error, status } =
+		useQueryData("category", "categories");
 
 	const [postCategory, setPostCategory] = useState(false);
 	const [editCategory, setEditCategory] = useState(false);
 	const [deleteCategoryy, setDeleteCategoryy] = useState(false);
 	const [idd, setId] = useState(0);
+	const [findedData, setFindedData] = useState({})
 	let categoryRef = useRef(null);
 
-	// const handleFetch = () => {
-	// 	refetch();
-	// };
+	const handleFetch = () => {
+		refetch();
+	};
 
-	// handleFetch();
 
 		Array.isArray(data) ?
 		data?.map(
@@ -65,6 +64,8 @@ export const Category = () => {
 			isActive: true,
 		};
 		ToastAlertPost("categories", obj, setPostCategory);
+		handleFetch();
+
 	};
 
 	/* Editing proccess start */
@@ -73,24 +74,27 @@ export const Category = () => {
 	const edit = (id) => {
 		setEditCategory(true);
 		setId(id);
+		const finded = data?.find(item => item.id === id)
+		setFindedData(finded)
 	};
 
 	// Function for edit
-	const handleEdit = async (id) => {
-		const obj = {
-			category: categoryRef.current.value,
-			isActive: true,
-		};
-		ToastAlertEdit("categories", id, obj, setEditCategory);
-	};
+
 
 	// FormSubmit for edit
 	const handleFormEdit = (evt) => {
 		evt.preventDefault();
-		handleEdit(idd);
+		const obj = {
+			category: categoryRef.current.value,
+			isActive: true,
+		};
+		ToastAlertEditWithId("categories", obj, idd,  setEditCategory);
+	handleFetch();
 	};
 
 	/* Editing proccess end */
+
+
 
 	/* Deleting proccess start */
 
@@ -102,7 +106,8 @@ export const Category = () => {
 
 	//handle delete button on confirm modal
 	const submitDeleting = () => {
-		deleteCategory(idd);
+		ToastAlertDelete("categories", idd, setDeleteCategoryy);
+		handleFetch()
 	};
 
 	//handle cancel button on confirm modal
@@ -110,20 +115,11 @@ export const Category = () => {
 		setDeleteCategoryy(false);
 	};
 
-	// function for delete
-	const deleteCategory = async (id) => {
-		ToastAlertDelete("categories", id, setDeleteCategoryy);
-	};
-
 	/* Deleting proccess end */
 
 	return (
 		<div className="p-5 category position-relative">
-			{data?.length ? (
-				<>
-				
-					<Table columns={columns} data={data} />
-					<Modal
+				<Modal
 						title={"Kategoriya qo'shish"}
 						modal={postCategory}
 						setModal={setPostCategory}
@@ -145,6 +141,10 @@ export const Category = () => {
 							<Button />
 						</form>
 					</Modal>
+			{data?.length ? (
+				<>
+				
+					<Table columns={columns} data={data} />
 					<Modal
 						title={"Kategoriyani o'zgartirish"}
 						modal={editCategory}
@@ -157,6 +157,7 @@ export const Category = () => {
 								Kategoriya nomi
 								<input
 									ref={categoryRef}
+									defaultValue={findedData.category}
 									autoFocus
 									type="text"
 									className="input"
@@ -164,16 +165,10 @@ export const Category = () => {
 									required
 								/>
 							</label>
-							<Button />
+							<Button text={"Saqlash"}/>
 						</form>
 					</Modal>
-					<button
-						className="reusable"
-						style={{ position: "absolute", bottom: "3rem", right: "0" }}
-						onClick={() => setPostCategory(true)}
-					>
-						Qo'shish
-					</button>
+					
 					<Modal
 						title={"Haqiqatdan ham o’chirmoqchimisiz?"}
 						modal={deleteCategoryy}
@@ -200,16 +195,10 @@ export const Category = () => {
 					<ToastContainerr />
 				</>
 			) : !data === [] ? (
-				<>
-				<h3>Kategoriyalar hozircha mavjud emas. Hohlasangiz qo'shing</h3>
-				<button
-						className="reusable"
-						style={{ position: "absolute", bottom: "3rem", right: "0" }}
-						onClick={() => setPostCategory(true)}
-						>
-						Qo'shish
-					</button>
-						</>
+				
+				  setTimeout(() => {
+          <h3>Kategoriyalar hozircha mavjud emas. Hohlasangiz qo'shing</h3>
+        },2500)
 			) : error?.message === "Network Error" ? (
 				<h2 className="text-danger">Server bilan muammo yuzaga keldi !</h2>
 			) : status === "loading" ? (
@@ -217,6 +206,12 @@ export const Category = () => {
 			) : (
 				""
 			)}
+				<button
+						className="reusable"
+						onClick={() => setPostCategory(true)}
+						>
+						Qo'shish
+					</button>
 		</div>
 	);
 };

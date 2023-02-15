@@ -4,20 +4,14 @@ import { Token } from '../auth';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL
 
 
-export const useQueryData = (path) => {
+export const useQueryData = (queryKey,path) => {
 
-  return useQuery("posts", async () => {
+  return useQuery(queryKey, async () => {
     const { data } = await axios.get(`${baseUrl}/${path}`, {headers: {Authorization: Token}})
     return data;
   });
 }
 
 
-export const useQueryDat = (path) => {
-    return useQuery("posts", async () => {
-      const { data } = await axios.get(`${baseUrl}/${path}`, {headers: {Authorization: Token}})
-      return data;
-    });
-}
 
 

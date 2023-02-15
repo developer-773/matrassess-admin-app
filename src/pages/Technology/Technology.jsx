@@ -1,16 +1,12 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Table } from "../../components/Table";
-import { ToggleSwitch } from "../../components/ToggleSwitch";
 import { useQueryData } from "../../hook";
 import { Modal } from "../../components/Modal";
 import { Button } from "../../components/Button";
-import { useForm } from "react-hook-form";
 import {
 	ToastAlertDelete,
-	ToastAlertEdit,
 	ToastAlertEditWithId,
 	ToastAlertPost,
-	ToastAlertPostWithId,
 	ToastContainerr,
 } from "../../components/Toastify";
 import "../../components/ImageUpload/ImageUpload.css";
@@ -19,20 +15,15 @@ import "../../components/Button/Button.css";
 import "./Technology.css";
 import "../../components/ToggleSwitch/ToggleSwitch.css";
 import { TechColumn } from "./TechColumn";
-import { Token } from "../../auth";
-import axios from "axios";
-
-const baseURL = import.meta.env.VITE_APP_BASE_IMG_URL;
 
 export const Technology = () => {
-	const [isToggled, setIsToggled] = useState(false);
-	const techData = useQueryData("technology");
+	const techData = useQueryData("tech", "technology");
 	const [postTech, setPostTech] = useState(false);
 	const [editTech, setEditTech] = useState(false);
 	const [deleteTech, setDeleteTech] = useState(false);
 	const [idd, setId] = useState(0);
 	const [findedData, setFindedData] = useState({});
-	const [newPoduct, setNewProduct] = useState(false);
+	const [count, setCount] = useState(0);
 
 	const nameRef = useRef(null);
 	const descRef = useRef(null);
@@ -43,6 +34,9 @@ export const Technology = () => {
 	const descRef2 = useRef(null);
 	const linkRef2 = useRef(null);
 	const videoRef2 = useRef(null);
+	const toggleRef2 = useRef(false);
+
+	useEffect(() => {}, [count]);
 
 	// Memoize table head
 	const columns = useMemo(() => TechColumn, []);
@@ -67,35 +61,26 @@ export const Technology = () => {
 							type="button"
 							onClick={(e) => deleting(+e.target.dataset.id)}
 						></button>
-					)) &&
-					(item.status = <ToggleSwitch />)
+					))
 		  )
 		: null;
-
-	const form1 = useForm({
-		mode: "onChange",
-	});
-
-	const { register, handleSubmit } = useForm({
-		mode: "onBlur",
-	});
 
 	// Form submit
 	const formSubmit = (evt) => {
 		evt.preventDefault();
 
 		const techPost = {
-			"name": nameRef.current.value,
-			"thumbnail": linkRef.current.value,
-			"link": videoRef.current.value,
-			"description": descRef.current.value,
-			"isActive": true,
+			name: nameRef.current.value,
+			thumbnail: linkRef.current.value,
+			link: videoRef.current.value,
+			description: descRef.current.value,
+			isActive: true,
 		};
-
 
 		//Alert for submit info
 		ToastAlertPost("technology", techPost, setPostTech);
 		techData.refetch();
+		setCount((prev) => prev + 1);
 	};
 
 	/* Editing proccess start */
@@ -110,17 +95,18 @@ export const Technology = () => {
 
 	// FormSubmit for edit
 	const formSubmitEdited = (evt) => {
-		evt.preventDefault()
+		evt.preventDefault();
 		const techEdited = {
-			"name": nameRef2.current.value,
-			"thumbnail": linkRef2.current.value,
-			"link": videoRef2.current.value,
-			"description": descRef2.current.value,
-			"isActive": true,
+			name: nameRef2.current.value,
+			thumbnail: linkRef2.current.value,
+			link: videoRef2.current.value,
+			description: descRef2.current.value,
+			isActive: true,
 		};
 		//Alert for submit info
 		ToastAlertEditWithId("technology", techEdited, idd, setEditTech);
-		
+		techData.refetch();
+		setCount(count + 1);
 	};
 
 	/* Editing proccess end */
@@ -135,7 +121,7 @@ export const Technology = () => {
 
 	//handle delete button on confirm modal
 	const submitDeleting = () => {
-		deleteCategory(idd);
+		ToastAlertDelete("technology", idd, setDeleteTech);
 	};
 
 	//handle cancel button on confirm modal
@@ -143,17 +129,10 @@ export const Technology = () => {
 		setDeleteProduct(false);
 	};
 
-	// function for delete
-	const deleteCategory = async (id) => {
-		ToastAlertDelete("technology", id, setDeleteTech);
-		refetch();
-	};
-
 	/* Deleting proccess end */
 
 	return (
 		<div className="p-5 tech ">
-		
 			<Modal
 				modal={postTech}
 				setModal={setPostTech}
@@ -161,7 +140,7 @@ export const Technology = () => {
 				width={"80%"}
 				height={"77%"}
 			>
-				<form className="row" onSubmit={(formSubmit)}>
+				<form className="row" onSubmit={formSubmit}>
 					<div className="col">
 						<label className="label mb-5">
 							Texnologiya nomi
@@ -178,17 +157,19 @@ export const Technology = () => {
 							Batafsil nomi
 							<input
 								type="text"
-
 								ref={descRef}
 								className="input"
 								placeholder="Batafsil..."
 								required
 							/>
 						</label>
-						<ToggleSwitch
-							isToggled={newPoduct}
-							onToggle={() => setNewProduct(!newPoduct)}
-						/>
+						<span className="d-flex justify-content-between">
+							<label className="label">Novinka</label>
+							<label className="toggle-switch">
+								<input type="checkbox" />
+								<span className="switch"></span>
+							</label>
+						</span>
 					</div>
 					<div className="col">
 						<label className="label mb-5">
@@ -196,7 +177,6 @@ export const Technology = () => {
 							<input
 								type="text"
 								className="input"
-
 								ref={linkRef}
 								placeholder="Videoning rasmi"
 								required
@@ -207,7 +187,6 @@ export const Technology = () => {
 							<input
 								type="text"
 								className="input"
-
 								ref={videoRef}
 								placeholder="Youtube link"
 								required
@@ -249,10 +228,14 @@ export const Technology = () => {
 								required
 							/>
 						</label>
-						<ToggleSwitch
-							isToggled={newPoduct}
-							onToggle={() => setNewProduct(!newPoduct)}
-						/>
+
+						<span className="d-flex justify-content-between">
+							<label className="label">Novinka</label>
+							<label className="toggle-switch">
+								<input type="checkbox" ref={toggleRef2} />
+								<span className="switch"></span>
+							</label>
+						</span>
 					</div>
 					<div className="col">
 						<label className="label mb-5">
@@ -284,7 +267,6 @@ export const Technology = () => {
 			<button
 				type="submit"
 				className="reusable"
-				style={{ position: "absolute", bottom: "3rem", right: "0" }}
 				onClick={() => setPostTech(true)}
 			>
 				Qo'shish
@@ -319,63 +301,12 @@ export const Technology = () => {
 			) : techData?.error?.message === "Network Error" ? (
 				<h2 className="text-danger">Server bilan muammo yuzaga keldi !</h2>
 			) : !techData?.data?.length ? (
-				<h3>Texnologiyalar hozircha mavjud emas. Hohlasangiz qo'shing</h3>
+				setTimeout(() => {
+					<h3>Texnologiyalar hozircha mavjud emas. Hohlasangiz qo'shing</h3>
+				  },2500)
 			) : (
 				""
 			)}
 		</div>
 	);
 };
-
-// import { useMemo } from "react"
-// import { Table } from "../../components/Table"
-// import { TechColumn } from "./TechColumn"
-// import {MdModeEditOutline, MdDelete} from "react-icons/md"
-// import "./Technology.css"
-// import axios from "axios"
-// import { Token } from "../../auth"
-// import { useQueryData } from "../../hook"
-
-// export const Technology = () => {
-
-//   const dat = useQueryData("technology")
-
-//   const handle = () => {
-//     alert("Working")
-//   }
-
-//   setTimeout(() => {
-//     console.log(dat)
-//   }, 2000)
-//   const data = [{
-//     tech_name: "Menory foam",
-//     tech_description: "Enim urna... ",
-//     tech_video_link: "youtube.com...",
-//     edit: <button className="p-3"><MdModeEditOutline size={20}/></button>,
-//     delete: <button className="p-3"><MdDelete color="red" size={20}/></button>
-//   }]
-
-//   const postTech = () => {
-//     const obj = {
-//       "name":"Texnologiya",
-//       "thumbnail":"O'zbekiston tengdur O'zbekistonga",
-//       "link":"https://kun.uz",
-//       "description":"Bas qillaring! Faqat O'zbekistondami muammolar? Yurtim uchun O'zbekistonim uchun jonim fido! Tez kunda ko'rishamiz",
-//       "isActive":true
-//     }
-//     axios.post("http://localhost:1212/admin/technology", obj, {
-//       headers: {
-//         Authorization: Token
-//       }
-//     }).then(res => console.log(res)).catch(err => console.log(err))
-//   }
-
-//   const columns = useMemo(() => TechColumn, [])
-//   const techData = useMemo(() => data, [])
-
-//   return (
-//     <div className="p-5 tech">
-//       <Table columns={columns} data={techData}/>
-//     </div>
-//   )
-// }

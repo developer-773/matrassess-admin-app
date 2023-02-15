@@ -1,53 +1,38 @@
-import { useFilters, useTable } from "react-table";
-import { useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useFilters, useGlobalFilter, useSortBy, useTable } from "react-table";
+import { GlobalInput } from "../Input";
 
 export const Table = ({ columns, data }) => {
-
-	const [styles, setStyles] = useState(false)
 
 	const {
 		getTableProps,
 		getTableBodyProps,
 		headerGroups,
 		rows,
-		state,
-		setGlobalFilter,
+		state, setGlobalFilter,
 		prepareRow,
-	} = useTable({ columns, data }, useFilters);
+	} = useTable({ columns, data }, useGlobalFilter, useSortBy);
 
-	const sty = {
-		position: "relative",
-		zIndex: "3",
-	};
 
-	window.addEventListener("click", (evt) => {
-		const target = evt.target;
-		if (target.className === "td") {
-			setStyles(true)
-		}
-
-		if(target.parentElement.style === 'position-relative') {
-		 setStyles(false)
-		}
-
-	});
-
+const {globalFilter} = state
 
 	return (
 		<div className="table-box">
+			<GlobalInput filter={globalFilter} setFilter={setGlobalFilter}/>
 			<table {...getTableProps()}>
 				<thead>
 					{headerGroups.map((headerGroup) => (
 						<tr {...headerGroup?.getHeaderGroupProps()}>
 							{headerGroup?.headers?.map((column) => (
-								<th {...column?.getHeaderProps()}>
+								<th {...column?.getHeaderProps(column.getSortByToggleProps)}>
 									{column?.render("Header")}
-									{/* <div>
-										{column.canFilter
-											? column.render("Filter")
-											: column.render("Header")}
-									</div> */}
+									
+									 <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? ' 🔽'
+                        : ' 🔼'
+                      : ''}
+                  </span>
 								</th>
 							))}
 						</tr>

@@ -6,22 +6,20 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./main.css";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ImageProvider } from "./context/ImageContex";
 
 const clientt = new QueryClient({
 	defaultOptions: {
 		queries: {
-			refetchOnWindowFocus: false
-		}
+			refetchOnWindowFocus: false,
+			cacheTime: 50000,
+		},
 	}
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<>
 		<QueryClientProvider client={clientt}>
-			<ImageProvider>
 				<RouterProvider router={router} />
-			</ImageProvider>
 		</QueryClientProvider>
 	</>
 );

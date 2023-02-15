@@ -10,6 +10,7 @@ import {Location} from "../pages/Location"
 import { Error } from "../components/Error";
 import { Login } from "../pages/Login/Login";
 import { Token } from "../auth";
+import { Carousel } from "../pages/Carousel";
 
 
 export const router = createBrowserRouter([
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
             {
                 path: "/location",
                 element: <Location />
+            },
+            {
+                path: "/carusel",
+                element: <Carousel />
             },
         ]
     },

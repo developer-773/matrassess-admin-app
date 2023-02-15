@@ -1,1 +1,1 @@
-export {ToastContainerr, NetworkToastify, postUser, ToastAlertEdit, ToastAlertDelete, ToastAlertPost, ToastAlertPostWithId, ToastAlertEditWithId} from "./Toastify"
+export {ToastContainerr,  postUser, ToastAlertEdit, ToastAlertDelete, ToastAlertPost, ToastAlertPostWithId, ToastAlertEditWithId, ToastAlertDeleteWithId} from "./Toastify"

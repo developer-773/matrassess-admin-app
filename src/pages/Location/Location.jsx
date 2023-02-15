@@ -1,10 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Table } from "../../components/Table";
 import { LocationColumn } from "./LocationColumn";
-import { MdModeEditOutline, MdDelete } from "react-icons/md";
 import "./Location.css";
-import axios from "axios";
-import { Token } from "../../auth";
 import "../../components/ImageUpload/ImageUpload.css";
 import "../../components/Input/Input.css";
 import "../../components/Button/Button.css";
@@ -13,10 +10,12 @@ import { ToggleSwitch } from "../../components/ToggleSwitch";
 import { Button } from "../../components/Button";
 import { useForm } from "react-hook-form";
 import { useQueryData } from "../../hook/useQueryData";
-import { ToastContainerr } from "../../components/Toastify";
+import { ToastAlertDelete, ToastAlertEditWithId, ToastAlertPost, ToastContainerr } from "../../components/Toastify";
+import axios from "axios";
+import { Token } from "../../auth";
 
 export const Location = () => {
-	const {data, isLoading, error, status} = useQueryData("")
+	const {data, error, status, refetch} = useQueryData("location", "address")
 	const [isToggled, setisToggled] = useState(false)
 	const [postAddress, setPostAddress] = useState(false)
 	const [editAddress, setEditAddress] = useState(false)
@@ -25,8 +24,12 @@ export const Location = () => {
 	const [idd, setId] = useState(0)
 	const [findedData, setFindedData] = useState({})
 	const [firstPhoto, setFirstPhoto] = useState(null)
-	const [secondPhoto, setSecondPhoto] = useState(null)
+	const [secondPhoto, setSecondPhoto] = useState(null)	
 	const [thirdPhoto, setThirdPhoto] = useState(null)
+	const toggleRef = useRef(null)
+	const toggleRef2 = useRef(null)
+
+
 
 
 	// Add edit and delete buttons for backend data to render on table
@@ -49,6 +52,10 @@ export const Location = () => {
 		</button>
 	))) : null
 
+
+	const refetchData = () => {
+		refetch()
+	}
 
 
 		/* Image upload and preview for user proccess start */
@@ -78,80 +85,96 @@ export const Location = () => {
 		setThirdPhoto(target[0])
 	}
 	
-		/* Image upload and preview for user proccess start */
+		/* Image upload and preview for user proccess end */
 	
 	// Initialize forms
 	const form1 = useForm()
 	const form2 = useForm()
 
 
+
+
 	//Submit form
-	const formSubmit = (evt) => {
-		evt.preventDefault()
-		// const obb = {
-		// 	"location": locR.current.value,
-		// 	"destination": desR.current.value,
-		// 	"geolocation": geoR.current.value,
-		// 	"images": imag.current.files[0],
-		// 	"isActive": true
-		// }
+	const formSubmit = (submited) => {
 
 		const data = new FormData()
-			data.append("location", locR.current.value),
-			data.append("destination", desR.current.value),
-			data.append("geolocation", geoR.current.value),
-			data.append("images", imag.current.files[0]),
+			data.append("location", submited.address_name),
+			data.append("destination", submited.address_description),
+			data.append("geolocation", submited.address_location),
+			data.append("images", submited.first_image[0]),
+			data.append("images", submited.second_image[0]),
+			data.append("images", submited.third_image[0]),
 			data.append("isActive", true)
-
-		axios.put("http://localhost:1212/admin/address/"+1, data, {
-			headers: {
-				Authorization: Token
-			}
-		}).then(res => console.log(res)).catch(err => console.log(err))
+			//Request data
+			ToastAlertPost("address", data, setPostAddress)
+			
+			setFirstPhoto(null), setSecondPhoto(null), setThirdPhoto(null)
+			refetchData()
 	}
 
-	const cancelDeleting =() => {}
+	/* Editing proccess start */
 
-	const submitDeleting = () => {}
-	
-	
-
-	
-
-	// const d = [
-	// 	{
-	// 		head: "Manzil",
-	// 	},
-    // {
-	// 		head: "mo'ljal",
-	// 	},
-    // {
-	// 		head: "Location",
-	// 	},
-	// ];
-
-	const locR = useRef(null), desR = useRef(null), geoR = useRef(null), imag = useRef(null)
+	// Get button id
+	const edit = (id) => {
+		setEditAddress(true);
+		setId(id);
+		let finded = data?.find((obj) => obj.id === id);
+		setFindedData(finded);
+	}
 
 
+	//Edit Form
+	const formEdit = (submited) => {
+
+		const data = new FormData()
+			data.append("location", submited.address_name),
+			data.append("destination", submited.address_description),
+			data.append("geolocation", submited.address_location),
+			data.append("images", submited.first_image[0]),
+			data.append("images", submited.second_image[0]),
+			data.append("images", submited.third_image[0]),
+
+			data.append("isActive", true)
+
+			//Request data
+			ToastAlertEditWithId("address", data, idd, setEditAddress)
+			refetchData()
+	}
+
+	/* Editing proccess end */
 
 
 
-	axios.delete("http://localhost:1212/admin/address/"+1, {
-		headers: {
-			Authorization: Token
-		}
-	}).then(res => console.log(res)).catch(err => console.log(err))
+/* Deleting proccess start */
+
+	//Get button id
+	const deleting = (id) => {
+		setId(id);
+		setDeleteAddress(true);
+	};
+
+	//handle delete button on confirm modal
+	const submitDeleting = () => {
+		ToastAlertDelete("address", idd, setDeleteAddress);
+		refetchData()
+	};
+
+	//handle cancel button on confirm modal
+	const cancelDeleting = () => {
+		setDeleteAddress(false);
+	};
+
+
+	/* Deleting proccess end */
+
 
 	const columns = useMemo(() => LocationColumn, []);
-	const LocationData = useMemo(() => data, []);
 
-	// const checkInternet = () => {
-	// 	if(navigator.)
-	// }
-	
+
 
 	return (
 		<div className="p-5 location">
+			
 			<Modal modal={postAddress} setModal={setPostAddress} title="Address qo'shish" 	width={"80%"}
 				height={"80%"}>
 			<form className="row" onSubmit={form1.handleSubmit(formSubmit)}>
@@ -208,19 +231,18 @@ export const Location = () => {
 				<div className="col">
 					<label className="label">
 				Manzil
-				<input className="input" name="address_name" type="text" {...form1.register("address_name")} ref={locR} placeholder="Manzil" />
+				<input className="input" name="address_name" type="text" {...form1.register("address_name")}  placeholder="Manzil" />
 					</label>
 					<label className="label">
 				Location
-				<input className="input" type="text" name="address_location" {...form1.register("address_location")} ref={desR} placeholder="Location" />
+				<input className="input" type="text" name="address_location" {...form1.register("address_location")} placeholder="Location" />
 					</label>
 					<span className="d-flex justify-content-between align-items-center">
-
-				<label className="label mb-0">
-					Holat
-				</label>
-				<ToggleSwitch />
-					</span>
+							<label className="label mb-0">Novinka</label>
+							<label className="toggle-switch">
+    <input type="checkbox" ref={toggleRef} />
+    <span className="switch"></span></label>
+						</span>
 				</div>
 				<div className="col">
 					<label className="label">
@@ -230,21 +252,88 @@ export const Location = () => {
 					<Button text={"Saqlash"} />
 				</div>
 
-				{/* <input type="file" ref={imag} />
-				
-				<input type="text" ref={geoR}  placeholder="Matn" />
-				 */}
-			{/* <button type="submit">Test</button> */}
+			
 			</form>
 			</Modal>
-			<button
-				type="submit"
-				className="reusable"
-				style={{ position: "absolute", bottom: "3rem", right: "0" }}
-				onClick={() => setPostAddress(true)}
-			>
-				Qo'shish
-			</button>
+			<Modal modal={editAddress} setModal={setEditAddress} title="Address o'zgartirish" 	width={"80%"}
+				height={"80%"}>
+			<form className="row" onSubmit={form2.handleSubmit(formEdit)}>
+			<div className="col">
+						<span className="image-upload position-relative">
+							<input
+								type="file"
+								{...form2.register("first_image")}
+								className="opacity-0 position-absolute"
+								onChange={handleFirstInputChange}
+								required
+							/>
+							{firstPhoto ? (
+								<img
+									className="uploaded-img position-absolute"
+									src={URL.createObjectURL(firstPhoto)}
+									alt="Image_Photo"
+								/>
+							) : null}
+						</span>
+						<span className="image-upload position-relative">
+							<input
+								type="file"
+								className="opacity-0 position-absolute"
+								{...form2.register("second_image")}
+								required
+								onChange={handleSecondInputChange}
+							/>
+							{secondPhoto ? (
+								<img
+									className="uploaded-img position-absolute"
+									src={URL.createObjectURL(secondPhoto)}
+									alt="Image_Photo"
+								/>
+							) : null}
+						</span>
+						<span className="image-upload">
+							{thirdPhoto ? (
+								<img
+									className="uploaded-img position-absolute"
+									src={URL.createObjectURL(thirdPhoto)}
+									alt="Image_Photo"
+								/>
+							) : null}
+							<input
+								type="file"
+								className="opacity-0"
+								{...form2.register("third_image")}
+								onChange={handleThirdInputChange}
+								required
+							/>
+						</span>
+					</div>
+				<div className="col">
+					<label className="label">
+				Manzil
+				<input className="input" name="address_name" defaultValue={findedData.location} type="text" {...form2.register("address_name")}  placeholder="Manzil" />
+					</label>
+					<label className="label">
+				Location
+				<input className="input" type="text" defaultValue={findedData.geolacation} name="address_location" {...form2.register("address_location")} placeholder="Location" />
+					</label>
+
+					<span className="d-flex justify-content-between align-items-center">
+							<label className="label mb-0">Novinka</label>
+							<label className="toggle-switch">
+    <input type="checkbox" ref={toggleRef2} />
+    <span className="switch"></span></label>
+						</span>
+				</div>
+				<div className="col">
+					<label className="label">
+						Matn
+					<textarea className="input" name="address_description" {...form2.register("address_description")} defaultValue={findedData.destination} cols="30" rows="10"></textarea>
+					</label>
+					<Button text={"Saqlash"} />
+				</div>
+			</form>
+			</Modal>
 			<Modal
 				title={"Haqiqatdan ham o’chirmoqchimisiz?"}
 				modal={deleteAddress}
@@ -267,8 +356,17 @@ export const Location = () => {
 					</button>
 				</div>
 			</Modal>
+			<button
+				type="submit"
+				className="reusable"
+				onClick={() => setPostAddress(true)}
+			>
+				Qo'shish
+			</button>
+			{data?.length ? <Table columns={columns} data={data}/> :status === "loading" ? <h2>Ma'lumotlar yuklanmoqda... Internet bormi?</h2> : error?.message  === "Network Error" ? 	<h2 className="text-danger">Server bilan muammo yuzaga keldi !</h2> : !data.length ?   setTimeout(() => {
+          <h3>Manzillar hozircha mavjud emas. Hohlasangiz qo'shing.</h3>
+        },2500) : ""}
 			<ToastContainerr />
-			{data?.length ? <Table columns={columns} data={data}/> :status === "loading" ? <h2>Ma'lumotlar yuklanmoqda... Internet bormi?</h2> : error?.message  === "Network Error" ? 	<h2 className="text-danger">Server bilan muammo yuzaga keldi !</h2> : !data.length ? <h3>Address hozircha mavjud emas. Hohlasangiz qo'shing</h3> : ""}
 		</div>
 	);
 };

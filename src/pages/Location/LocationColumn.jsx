@@ -1,15 +1,15 @@
 export const LocationColumn = [
 	{
 		Header: "Manzil",
-		accessor: "user_address",
+		accessor: "location",
 	},
     {
 		Header: "Mo'ljal",
-		accessor: "user_target_address",
+		accessor: "destination",
 	},
     {
 		Header: "Location",
-		accessor: "user_location",
+		accessor: "geolacation",
 	},
     {
 		Header: "",

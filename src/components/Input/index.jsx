@@ -1,0 +1,1 @@
+export {GlobalInput} from "./Input"

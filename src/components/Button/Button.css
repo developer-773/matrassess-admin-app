@@ -1,4 +1,7 @@
 .reusable {
+	position: fixed;
+	top: 57rem;
+	right: 4rem;
     display: block;
     min-width: 220px;
 	padding: 14px;

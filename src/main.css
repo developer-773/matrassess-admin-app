@@ -97,7 +97,15 @@ td {
 
 .btn-edit {
 	background-image: url("./assets/editIcon.svg");
-
 }
 
+.category form {
+	top: -7.4rem;
+	left: 7px;
+}
+
+.carusel form {
+	top: -7.4rem;
+	left: 7px;
+}
 

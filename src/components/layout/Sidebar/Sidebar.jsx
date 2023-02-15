@@ -2,8 +2,8 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import "./Sidebar.css";
 import { AiFillHome } from "react-icons/ai";
-import {BiUser} from "react-icons/bi"
-import {MdLocationOn} from "react-icons/md"
+
+import {MdLocationOn, MdOutlineSwipe} from "react-icons/md"
 import { CustomerIcon, CategoryIcon, ProductIcon, SettingsIcon } from "../../../assets/icons";
 export const Sidebar = () => {
 	return (
@@ -60,6 +60,15 @@ export const Sidebar = () => {
 				>
 					<MdLocationOn />
 					Manzil
+				</NavLink>
+			</li>
+			<li className="sidebar__item">
+				<NavLink
+					to={"/carusel"}
+					className={({ isActive }) => (isActive ? "active" : "")}
+				>
+					<MdOutlineSwipe />
+					Carusel
 				</NavLink>
 			</li>
 		</ul>

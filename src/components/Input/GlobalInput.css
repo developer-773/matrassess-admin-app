@@ -1,0 +1,41 @@
+.globalForm {
+	position: absolute;
+	top: 1.5rem;
+	left: 22.6rem;
+}
+
+
+.header__input {
+	position: relative;
+	display: inline-block;
+	width: 400px;
+	padding: 12px;
+	font-family: "Montserrat";
+	font-weight: 500;
+	font-size: 13px;
+	line-height: 16px;
+	background: #ffffff;
+	color: #00000080;
+	border-radius: 7px;
+}
+
+.header__btn {
+	position: absolute;
+	top: 2.4rem;
+	left: 58rem;
+	border: none;
+	background-color: transparent;
+}
+
+input::-webkit-search-cancel-button{
+	appearance: none;
+}
+
+.header__btn {
+	position: absolute;
+	top: 1rem;
+	left: 35rem;
+	z-index: 2;
+	border: none;
+	background-color: transparent;
+}

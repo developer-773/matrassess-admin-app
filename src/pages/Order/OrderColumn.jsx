@@ -4,17 +4,17 @@ import FilterForm from "../../components/test";
 export const OrderColumn = [
     {
         Header: 'ID',
-        accessor: 'id_number',
+        accessor: 'id',
         // Filter: FilterForm,
     },
     {
         Header: 'Ismi',
-        accessor: 'user_name',
+        accessor: 'name',
         // Filter: FilterForm,
     },
     {
         Header: 'Telefon Raqami',
-        accessor: 'user_phone',
+        accessor: 'number',
         // Filter: FilterForm,
     },
     {
@@ -24,7 +24,7 @@ export const OrderColumn = [
     },
     {
         Header: 'Miqdor',
-        accessor: 'product_count',
+        accessor: 'count',
         // Filter: FilterForm,
     },
     {
